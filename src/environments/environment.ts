@@ -2,8 +2,20 @@
 // `ng build` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
+const openChargeMaptoken = '72341d83-3f03-42ab-b3f3-6b0a46f17f05'
+
 export const environment = {
-  production: false
+  production: false,
+  mapbox: {
+    accessToken: 'pk.eyJ1IjoiYmxpbmcxNzc3Nzc3Nzc3NzciLCJhIjoiY2t5bG5saXFlMmQ2NzJ1cXA3azdsMHFnNiJ9.Sfhu_LnR_vx9HPVJVHodbQ'
+  },
+  openChargeMap : {
+    token : openChargeMaptoken,
+    apiKey: 'https://api.openchargemap.io/v3/poi/?key=' + openChargeMaptoken,
+  },
+  server : {
+    url: 'http://localhost:3000'
+  }
 };
 
 /*
