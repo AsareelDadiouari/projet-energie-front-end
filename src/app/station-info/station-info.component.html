@@ -1,7 +1,22 @@
 <div #StationInfo>
   <h1 mat-dialog-title>{{data.title}}</h1>
   <div mat-dialog-content>
-    {{data.misc}}
+    <div *ngIf="data.address">Adresse : {{data.address}}</div>
+    <mat-divider></mat-divider>
+    <div>Ville : {{data.town}}</div>
+    <mat-divider></mat-divider>
+    <h3 class="bornes" >Bornes</h3>
+    <mat-grid-list *ngFor="let chargingPoint of data.chargingPoints" cols="2" rowHeight="2:1">
+      <mat-grid-tile>Nom : </mat-grid-tile>
+      <mat-grid-tile>{{chargingPoint.formalName}}</mat-grid-tile>
+      <mat-grid-tile *ngIf="chargingPoint.voltage">Voltage : </mat-grid-tile>
+      <mat-grid-tile *ngIf="chargingPoint.voltage">{{chargingPoint.voltage}} W</mat-grid-tile>
+      <mat-grid-tile>Puissance : </mat-grid-tile>
+      <mat-grid-tile>{{chargingPoint.power}} KW</mat-grid-tile>
+      <mat-grid-tile>Opérationnel : </mat-grid-tile>
+      <mat-grid-tile><mat-icon> {{chargingPoint.isOperational ? "check_circle" : "highlight_off"}}</mat-icon></mat-grid-tile>
+      <mat-divider></mat-divider>
+    </mat-grid-list>
   </div>
 </div>
 

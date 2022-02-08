@@ -9,11 +9,11 @@ export const environment = {
   mapbox: {
     accessToken: 'pk.eyJ1IjoiYmxpbmcxNzc3Nzc3Nzc3NzciLCJhIjoiY2t5bG5saXFlMmQ2NzJ1cXA3azdsMHFnNiJ9.Sfhu_LnR_vx9HPVJVHodbQ'
   },
-  openChargeMap : {
-    token : openChargeMaptoken,
-    apiKey: 'https://api.openchargemap.io/v3/poi/?key=' + openChargeMaptoken,
+  openChargeMap: {
+    token: openChargeMaptoken,
+    apiKey: 'https://api.openchargemap.io/v3/poi/?key=' + openChargeMaptoken + "&output=json&=&verbose=true",
   },
-  server : {
+  server: {
     url: 'http://localhost:3000'
   }
 };

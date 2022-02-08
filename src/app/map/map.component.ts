@@ -1,15 +1,15 @@
-import {Component, OnInit, ChangeDetectorRef, OnDestroy, ElementRef} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import * as mapboxgl from 'mapbox-gl';
 import {environment} from "../../environments/environment";
-import {BehaviorSubject, catchError, Observable, Subscription, throwError} from "rxjs";
 import {MatDialog} from "@angular/material/dialog";
 import {StationInfoComponent} from "../station-info/station-info.component";
 import {MapService} from "../service/map.service";
+import {Coords} from "../models/coords.interface";
+import {StationInfo} from "../models/stations.interface";
+import {Subscription} from "rxjs";
+import {MarkerMap} from "../models/markerMap";
 
-export interface Coords{
-  lon: number,
-  lat: number
-}
+
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
@@ -18,79 +18,108 @@ export interface Coords{
 export class MapComponent implements OnInit, OnDestroy {
   map!: mapboxgl.Map;
   style: string = 'mapbox://styles/mapbox/streets-v11';
-  defaultCoords: Coords = {
-    lat: 37,
-    lon: 10
-  };
-  currentPosition: Coords = this.defaultCoords;
-  socketData: any;
+  defaultCoords: Coords;
+  currentPosition!: Coords;
+  socketData!: any;
+  stations!: StationInfo[];
+  stationsMarkers: MarkerMap[] = []
+  stationInfoSubscriber!: Subscription;
 
   constructor(public dialog: MatDialog, private mapService: MapService) {
-
+    this.defaultCoords = {
+      lat: 32,
+      lon: -5
+    }
+    this.currentPosition = {} as Coords
   }
 
   ngOnInit(): void {
-    this.mapService.onConnect().subscribe(data => {
+    /*this.mapService.onConnect().subscribe(data => {
       console.log("Connect : ", data)
     });
 
     this.mapService.onReceivingMessage().subscribe(message => {
       this.socketData = message;
-      console.log("Message : ",message);
-    })
+      console.log("socketData : ", this.socketData);
+    });
 
     this.mapService.onEvent().subscribe(event => {
-      console.log("Event : ",event);
-    })
+      console.log("Event : ", event);
+    })*/
 
     navigator.geolocation.getCurrentPosition((position => {
-      this.defaultCoords.lon = position.coords.longitude;
-      this.defaultCoords.lat = position.coords.latitude;
+      this.currentPosition.lon = position.coords.longitude;
+      this.currentPosition.lat = position.coords.latitude;
+      this.initMap(this.currentPosition);
+    }), err => {
       this.initMap(this.defaultCoords);
-    }));
+    });
+
+    this.stationInfoSubscriber = this.mapService.getChargePoints("ma").subscribe({
+      next: (value: StationInfo[]) => {
+        this.stations = value;
+        this.setChargePointsMarker(this.stations);
+      },
+      error: err => {
+        console.error("Error ==", err);
+      }
+    })
   }
 
   ngOnDestroy() {
+    this.stationInfoSubscriber.unsubscribe();
   }
 
-  initMap(coords: Coords){
+  initMap(coords: Coords) {
     this.map = new mapboxgl.Map({
       accessToken: environment.mapbox.accessToken,
       container: "map",
       style: this.style,
-      zoom: 13,
+      zoom:  Object.keys(this.currentPosition).length > 0 ? 13 : 5,
       center: [coords.lon, coords.lat]
     });
 
     this.map.addControl(new mapboxgl.NavigationControl());
-    this.setMarker( this.currentPosition,"#3384ff"); // Set current Position
+    if (Object.keys(this.currentPosition).length > 0)
+      this.setMarker(coords, "#3384ff", "Position"); // Set current Position
     this.map.resize();
   }
 
-  setMarker(coords: Coords,color: string, customElement?: HTMLElement){
-
+  setMarker(coords: Coords, color: string, type: string, customElement?: HTMLElement) {
     const marker = new mapboxgl.Marker({
       color: color,
-      element: customElement
-    }).setLngLat(coords).addTo(this.map)
+      element: customElement,
+    }).setLngLat(coords).addTo(this.map);
 
-    marker.getElement().addEventListener('click', (event) => {
-      this.mapService.sendData();
-      this.openDialog(this.socketData);
-    });
+    if (type === "Station"){
+      this.stationsMarkers.push(<MarkerMap>{marker: marker, type: type});
+    }
+
+    return marker;
   }
 
-  openDialog(info: any){
+  setChargePointsMarker(stations: StationInfo[]){
+    stations.forEach((station, index) => {
+      const marker = this.setMarker(station.coords, "#ff615d", "Station");
+      marker.getElement().addEventListener('click', event =>{
+        console.log(index);
+        this.openDialog(this.findStation(index));
+      })
+    })
+  }
+
+  findStation(index: number): StationInfo{
+    return this.stations[index];
+  }
+
+  openDialog(stationInfo: (StationInfo | undefined)) {
     const dialogRef = this.dialog.open(StationInfoComponent, {
-      width: '250px',
-      data: {
-        title: "Test",
-        misc: info
-      }
+      width: '330px',
+      data: stationInfo
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log(result);
+      //console.log(result);
     });
   }
 }
