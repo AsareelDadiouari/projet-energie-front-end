@@ -1,1 +1,8 @@
-<p>car-info works!</p>
+<mat-form-field appearance="fill">
+  <mat-label>Choisissez un model</mat-label>
+  <mat-select>
+    <mat-option *ngFor="let vehicle of vehicles" [value]="vehicle.name">
+      {{vehicle.name}}
+    </mat-option>
+  </mat-select>
+</mat-form-field>

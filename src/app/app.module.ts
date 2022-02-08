@@ -17,6 +17,9 @@ import { CarInfoComponent } from './car-info/car-info.component';
 import {MatDividerModule} from "@angular/material/divider";
 import {MatGridListModule} from "@angular/material/grid-list";
 import {MatIconModule} from "@angular/material/icon";
+import {MatFormFieldModule} from "@angular/material/form-field";
+import {MatSelectModule} from "@angular/material/select";
+import {MatToolbarModule} from "@angular/material/toolbar";
 
 const config: SocketIoConfig = {url: environment.server.url, options: {}};
 
@@ -38,7 +41,10 @@ const config: SocketIoConfig = {url: environment.server.url, options: {}};
     MatTabsModule,
     MatDividerModule,
     MatGridListModule,
-    MatIconModule
+    MatIconModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatToolbarModule
   ],
   providers: [],
   bootstrap: [AppComponent]
