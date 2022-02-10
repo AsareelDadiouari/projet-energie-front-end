@@ -1,5 +1,7 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import * as mapboxgl from 'mapbox-gl';
+import {GeolocateControl} from 'mapbox-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
 import {environment} from "../../environments/environment";
 import {MatDialog} from "@angular/material/dialog";
 import {StationInfoComponent} from "../station-info/station-info.component";
@@ -8,20 +10,24 @@ import {Coords} from "../models/coords.interface";
 import {StationInfo} from "../models/stations.interface";
 import {Subscription} from "rxjs";
 import {MarkerMap} from "../models/markerMap";
+import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
+import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.css']
 })
-export class MapComponent implements OnInit, OnDestroy {
+export class MapComponent implements OnInit, OnDestroy, AfterViewInit {
+  searchBarGeoCoder!: MapboxGeocoder;
+  currentPositionControl!: GeolocateControl;
+  @ViewChild('mapElement', {static: true}) mapElement!: ElementRef;
   map!: mapboxgl.Map;
-  style: string = 'mapbox://styles/mapbox/streets-v11';
+  style: string = 'mapbox://styles/mapbox/outdoors-v11';
   defaultCoords: Coords;
   currentPosition!: Coords;
   socketData!: any;
   stations!: StationInfo[];
-  stationsMarkers: MarkerMap[] = []
   stationInfoSubscriber!: Subscription;
 
   constructor(public dialog: MatDialog, private mapService: MapService) {
@@ -33,7 +39,7 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    /*this.mapService.onConnect().subscribe(data => {
+    this.mapService.onConnect().subscribe(data => {
       console.log("Connect : ", data)
     });
 
@@ -44,16 +50,71 @@ export class MapComponent implements OnInit, OnDestroy {
 
     this.mapService.onEvent().subscribe(event => {
       console.log("Event : ", event);
-    })*/
-
-    navigator.geolocation.getCurrentPosition((position => {
-      this.currentPosition.lon = position.coords.longitude;
-      this.currentPosition.lat = position.coords.latitude;
-      this.initMap(this.currentPosition);
-    }), err => {
-      this.initMap(this.defaultCoords);
     });
 
+    this.initMap(this.defaultCoords);
+  }
+
+  ngOnDestroy() {
+    this.stationInfoSubscriber.unsubscribe();
+  }
+
+  ngAfterViewInit() {
+  }
+
+  initMap(coords: Coords) {
+    this.map = new mapboxgl.Map({
+      accessToken: environment.mapbox.accessToken,
+      container: this.mapElement.nativeElement as HTMLElement,
+      style: this.style,
+      zoom: 5,
+      center: [coords.lon, coords.lat],
+    });
+
+    this.map.addControl(new mapboxgl.NavigationControl({visualizePitch: true}));
+    this.addLocateUserPositionControl();
+    this.addSearchControl();
+    this.addStationsMarkers();
+    this.addVehicleInfo();
+    this.map.once('load', () => {
+      this.map.resize();
+    })
+  }
+
+  setMarker(coords: Coords, color: string, type: string, customElement?: HTMLElement) {
+    const marker = new mapboxgl.Marker({
+      color: color,
+      element: customElement,
+    }).setLngLat(coords).addTo(this.map);
+
+    return marker;
+  }
+
+  setChargePointsMarker(stations: StationInfo[]) {
+    stations.forEach((station, index) => {
+      const marker = this.setMarker(station.coords, "#ff615d", "Station");
+      marker.getElement().addEventListener('click', event => {
+        this.openDialog(this.findStation(index));
+      })
+    })
+  }
+
+  findStation(index: number): StationInfo {
+    return this.stations[index];
+  }
+
+  addSearchControl() {
+    this.searchBarGeoCoder = new MapboxGeocoder({
+      accessToken: environment.mapbox.accessToken,
+      mapboxgl: this.map
+    });
+    this.map.addControl(this.searchBarGeoCoder);
+    this.searchBarGeoCoder.on("result", (event) => {
+      console.log(event);
+    })
+  }
+
+  addStationsMarkers() {
     this.stationInfoSubscriber = this.mapService.getChargePoints("ma").subscribe({
       next: (value: StationInfo[]) => {
         this.stations = value;
@@ -65,87 +126,31 @@ export class MapComponent implements OnInit, OnDestroy {
     })
   }
 
-  ngOnDestroy() {
-    this.stationInfoSubscriber.unsubscribe();
-  }
+  addLocateUserPositionControl() {
+    this.currentPositionControl = new mapboxgl.GeolocateControl({
+      positionOptions: {
+        enableHighAccuracy: true,
+      },
+      trackUserLocation: true,
+      showUserHeading: true,
+      showAccuracyCircle: true
+    });
+    this.map.addControl(this.currentPositionControl);
 
-  initMap(coords: Coords) {
-    this.map = new mapboxgl.Map({
-      accessToken: environment.mapbox.accessToken,
-      container: "map",
-      style: this.style,
-      zoom:  Object.keys(this.currentPosition).length > 0 ? 13 : 5,
-      center: [coords.lon, coords.lat]
+    this.currentPositionControl.on('geolocate', (event: any) => {
+      this.currentPosition = {
+        lon: event.coords.longitude,
+        lat: event.coords.latitude
+      }
     });
 
-    this.map.addControl(new mapboxgl.NavigationControl({visualizePitch: true}));
-    if (Object.keys(this.currentPosition).length > 0)
-      this.setMarker(coords, "#3384ff", "Position"); // Set current Position
-    this.addVehicleLayer();
-    this.map.resize();
-  }
-
-  setMarker(coords: Coords, color: string, type: string, customElement?: HTMLElement) {
-    const marker = new mapboxgl.Marker({
-      color: color,
-      element: customElement,
-    }).setLngLat(coords).addTo(this.map);
-
-    if (type === "Station"){
-      this.stationsMarkers.push(<MarkerMap>{marker: marker, type: type});
-    }
-
-    return marker;
-  }
-
-  setChargePointsMarker(stations: StationInfo[]){
-    stations.forEach((station, index) => {
-      const marker = this.setMarker(station.coords, "#ff615d", "Station");
-      marker.getElement().addEventListener('click', event =>{
-        console.log(index);
-        this.openDialog(this.findStation(index));
-      })
-    })
-  }
-
-  findStation(index: number): StationInfo{
-    return this.stations[index];
-  }
-
-  addVehicleLayer(){
-    this.map.on('load', () =>{
-      this.map.addSource('Test_A', {
-        type: 'vector',
-        url: 'mapbox://liamboltonuk.bv937ecm'
-      });
-      this.map.addLayer({
-        'id': 'Test_A',
-        'type': 'circle',
-        'source': 'Test_A',
-        'layout':
-          {
-            'visibility': 'visible'
-          },
-        'paint': {
-          'circle-radius': 4,
-          'circle-color': {
-            property: 'conct',
-            type: 'interval',
-            stops: [
-              [1, '#00477a'],
-              [700, '#00477a']
-            ]
-          },
-          'circle-opacity': {
-            stops: [
-              [12, 1],
-              [13, 0.75]
-            ]
-          },
-        },
-        'source-layer': 'LAEI_2013_N0x-5pzq5d'
-      });
+    this.map.once('idle', () => {
+      this.currentPositionControl.trigger();
     });
+  }
+
+  addVehicleInfo() {
+
   }
 
   openDialog(stationInfo: (StationInfo | undefined)) {

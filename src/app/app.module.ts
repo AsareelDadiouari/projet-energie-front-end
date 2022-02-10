@@ -1,7 +1,7 @@
 import {NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {SocketIoConfig, SocketIoModule} from 'ngx-socket-io';
-import { HttpClientModule } from '@angular/common/http';
+import {HttpClientModule} from '@angular/common/http';
 
 
 import {AppComponent} from './app.component';
@@ -13,13 +13,18 @@ import {MatDialogModule} from "@angular/material/dialog";
 import {MatButtonModule} from "@angular/material/button";
 import {environment} from "../environments/environment";
 import {MatTabsModule} from "@angular/material/tabs";
-import { CarInfoComponent } from './car-info/car-info.component';
+import {CarInfoComponent} from './car-info/car-info.component';
 import {MatDividerModule} from "@angular/material/divider";
 import {MatGridListModule} from "@angular/material/grid-list";
 import {MatIconModule} from "@angular/material/icon";
 import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatSelectModule} from "@angular/material/select";
 import {MatToolbarModule} from "@angular/material/toolbar";
+import {MatInputModule} from "@angular/material/input";
+import {MatAutocompleteModule} from "@angular/material/autocomplete";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {FilterPropertyPipe} from "./pipes/objetPropFilter.pipe";
+import {MatSnackBar} from "@angular/material/snack-bar";
 
 const config: SocketIoConfig = {url: environment.server.url, options: {}};
 
@@ -28,7 +33,8 @@ const config: SocketIoConfig = {url: environment.server.url, options: {}};
     AppComponent,
     MapComponent,
     StationInfoComponent,
-    CarInfoComponent
+    CarInfoComponent,
+    FilterPropertyPipe
   ],
   imports: [
     BrowserModule,
@@ -44,9 +50,13 @@ const config: SocketIoConfig = {url: environment.server.url, options: {}};
     MatIconModule,
     MatFormFieldModule,
     MatSelectModule,
-    MatToolbarModule
+    MatToolbarModule,
+    MatInputModule,
+    MatAutocompleteModule,
+    ReactiveFormsModule,
+    FormsModule,
   ],
-  providers: [],
+  providers: [MatSnackBar],
   bootstrap: [AppComponent]
 })
 export class AppModule {

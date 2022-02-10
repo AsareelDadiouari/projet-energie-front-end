@@ -1,6 +1,6 @@
 import * as mapboxgl from "mapbox-gl";
 
-export enum MarkerType{
+export enum MarkerType {
   Station = "Station",
   Position = "Position",
 }

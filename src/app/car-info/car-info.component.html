@@ -1,8 +1,59 @@
-<mat-form-field appearance="fill">
-  <mat-label>Choisissez un model</mat-label>
-  <mat-select>
-    <mat-option *ngFor="let vehicle of vehicles" [value]="vehicle.name">
-      {{vehicle.name}}
-    </mat-option>
-  </mat-select>
-</mat-form-field>
+<section  class="car-info">
+  <form  [formGroup]="carInfoForm" (ngSubmit)="onSubmit($event)" class="car-info-form">
+    <div class="mat-display-1">Entrez les infos de votre véhicule</div>
+    <p>
+      <mat-form-field appearance="outline">
+        <mat-label>Enter un model</mat-label>
+        <input type="text"
+               placeholder="Pick one"
+               aria-label="Number"
+               matInput
+               [formControlName]="'name'"
+               [matAutocomplete]="auto">
+        <mat-autocomplete
+          (optionSelected)="fillOnOptionSelect($event)"
+          autoActiveFirstOption #auto="matAutocomplete">
+          <mat-option *ngFor="let vehicle of vehicles"
+                      [value]="vehicle | property:'name'"
+          >
+            {{vehicle.name}}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    </p>
+
+    <p>
+      <mat-form-field appearance="outline">
+        <mat-label>Puissance</mat-label>
+        <input matInput [formControlName]="'power'">
+      </mat-form-field>
+    </p>
+
+    <p>
+      <mat-form-field appearance="outline">
+        <mat-label>Autonomie</mat-label>
+        <input matInput [formControlName]="'autonomy'">
+      </mat-form-field>
+    </p>
+
+    <p>
+      <mat-form-field appearance="outline">
+        <mat-label>Consommation</mat-label>
+        <input matInput [formControlName]="'consumption'">
+      </mat-form-field>
+    </p>
+
+    <p>
+      <mat-form-field appearance="outline">
+        <mat-label>Voltage</mat-label>
+        <input matInput [formControlName]="'battery'">
+      </mat-form-field>
+    </p>
+
+    <p>
+      <button mat-raised-button type="button" (click)="onSubmit($event)" color="primary" [disabled]="this.carInfoForm.invalid">Submit</button>
+    </p>
+  </form>
+
+</section>
+

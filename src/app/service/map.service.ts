@@ -1,6 +1,6 @@
 import {Injectable} from "@angular/core";
 import {Socket} from 'ngx-socket-io';
-import {BehaviorSubject, map, mergeMap, Observable, share, shareReplay, switchMap, tap, toArray} from "rxjs";
+import {BehaviorSubject, map, Observable, share, shareReplay, tap} from "rxjs";
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../../environments/environment";
 import {ChargingPoint, StationInfo} from "../models/stations.interface";
@@ -14,6 +14,7 @@ export class MapService {
   socketData: string = this.socketDataSubject.value;
 
   constructor(private socket: Socket, private httpClient: HttpClient) {
+    socket.disconnect();
     this.onReceivingMessage().subscribe(message => {
       this.socketDataSubject.next(message);
       console.log("mapserevice socket =", this.socketDataSubject.value);
@@ -54,7 +55,7 @@ export class MapService {
     );
   }
 
-  buildStation(openChargemap: OpenChargeMapOBJ): StationInfo{
+  buildStation(openChargemap: OpenChargeMapOBJ): StationInfo {
     const station = {} as StationInfo;
     station.ID = openChargemap?.ID;
     station.title = openChargemap.AddressInfo?.Title;

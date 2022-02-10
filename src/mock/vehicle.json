@@ -1,72 +1,72 @@
 [
   {
-    "name" : "Audi e-tron 50 quattro / 55 quattro",
-    "power": 230 ,
-    "battery": 64.7 ,
-    "autonomy": 339 ,
+    "name": "Audi e-tron 50 quattro / 55 quattro",
+    "power": 230,
+    "battery": 64.7,
+    "autonomy": 339,
     "image": "https://www.auto-moto.com/wp-content/uploads/sites/9/2019/03/audi-e-tron-750x410.jpg"
   },
   {
-    "name" : "BMW i4 eDrive 40 / M50",
-    "power": 250 ,
+    "name": "BMW i4 eDrive 40 / M50",
+    "power": 250,
     "battery": 80.7,
-    "autonomy": 590 ,
+    "autonomy": 590,
     "image": "https://www.auto-moto.com/wp-content/uploads/sites/9/2022/01/bmw-i4-750x410.jpg"
   },
   {
-    "name" : "Citroën ë-C4",
-    "power": 100 ,
-    "battery": 50 ,
-    "autonomy": 350 ,
+    "name": "Citroën ë-C4",
+    "power": 100,
+    "battery": 50,
+    "autonomy": 350,
     "image": "https://www.auto-moto.com/wp-content/uploads/sites/9/2020/06/citroen-e-c4-1-750x410.jpg"
   },
   {
-    "name" : "Fiat 500e 23,8 / 42",
-    "power": 70 ,
-    "battery": 23.8 ,
-    "autonomy": 185 ,
+    "name": "Fiat 500e 23,8 / 42",
+    "power": 70,
+    "battery": 23.8,
+    "autonomy": 185,
     "image": "https://www.auto-moto.com/wp-content/uploads/sites/9/2020/06/fiat-500e-750x410.jpg"
   },
   {
-    "name" : "Renault Zoé R110 / R135",
-    "power": 80 ,
-    "battery": 52 ,
-    "autonomy": 390 ,
+    "name": "Renault Zoé R110 / R135",
+    "power": 80,
+    "battery": 52,
+    "autonomy": 390,
     "image": "https://www.auto-moto.com/wp-content/uploads/sites/9/2019/09/renault-zoe-750x410.jpg"
   },
   {
-    "name" : "Tesla Model S",
-    "power": 350 ,
-    "battery": 72.5 ,
-    "autonomy": 663 ,
+    "name": "Tesla Model S",
+    "power": 350,
+    "battery": 72.5,
+    "autonomy": 663,
     "image": "https://www.auto-moto.com/wp-content/uploads/sites/9/2019/11/tesla-model-s-750x410.jpg"
   },
   {
-    "name" : "Toyota Mirai",
-    "power": 134 ,
+    "name": "Toyota Mirai",
+    "power": 134,
     "battery": 1.2,
-    "autonomy": 500 ,
+    "autonomy": 500,
     "image": "https://www.auto-moto.com/wp-content/uploads/sites/9/2021/02/toyota-mirai-750x410.jpg"
   },
   {
-    "name" : "Volkswagen ID3 Pure ",
-    "power": 110 ,
-    "battery": 45 ,
-    "autonomy": 350 ,
+    "name": "Volkswagen ID3 Pure ",
+    "power": 110,
+    "battery": 45,
+    "autonomy": 350,
     "image": "https://www.auto-moto.com/wp-content/uploads/sites/9/2019/09/volkswagen-id3-750x410.jpeg"
   },
   {
-    "name" : "Volvo XC40 P8 Recharge",
-    "power": 300 ,
-    "battery": 78 ,
-    "autonomy": 425 ,
+    "name": "Volvo XC40 P8 Recharge",
+    "power": 300,
+    "battery": 78,
+    "autonomy": 425,
     "image": "https://www.auto-moto.com/wp-content/uploads/sites/9/2020/01/volvo-xc40-recharge-750x410.jpeg"
   },
   {
-    "name" : "Seat Mii Electric",
-    "power":  61,
-    "battery": 36.8 ,
-    "autonomy": 260 ,
+    "name": "Seat Mii Electric",
+    "power": 61,
+    "battery": 36.8,
+    "autonomy": 260,
     "image": "https://www.auto-moto.com/wp-content/uploads/sites/9/2019/09/seat-mii-electric-750x410.jpeg"
   }
 ]

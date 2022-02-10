@@ -1,13 +1,18 @@
 <section class="section-main">
-  <mat-tab-group>
-    <mat-tab label="Map"> <app-map></app-map> </mat-tab>
-    <!--<mat-tab label="Véhicule"> <app-car-info></app-car-info> </mat-tab>-->
-  </mat-tab-group>
-  <mat-toolbar color="#fff">
+  <mat-toolbar #toolbar color="#fff">
     <mat-toolbar-row>
+      <button (click)="openSettings" mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon">
+        <mat-icon>menu</mat-icon>
+      </button>
       <span>Optimisation Trajet</span>
     </mat-toolbar-row>
   </mat-toolbar>
+  <mat-tab-group [(selectedIndex)]="tabIndex" #tabs headerPosition="below">
+    <mat-tab label="Map">
+      <app-map></app-map>
+    </mat-tab>
+    <mat-tab label="Véhicule"> <app-car-info (tabModificationEmitter)="updateTabIndex($event)" [tabIndex]="tabIndex" [tabs]="tabs" [toolbar]="toolbar"></app-car-info> </mat-tab>
+  </mat-tab-group>
 </section>
 
 
