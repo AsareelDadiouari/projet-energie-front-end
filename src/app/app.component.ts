@@ -17,7 +17,7 @@ export class AppComponent implements OnInit {
   public tabIndex: number = 0;
   public itineraryIsAccessible: boolean = false;
   public countryFormControl: FormControl = new FormControl("");
-  public countriesSelection = ["MA", "FR", "DE", "CA", "US", "JP", "GB", "NL"]
+  public countriesSelection = ["MA", "FR", "DE", "CA", "US", "JP", "GB", "NL", "ES", "BR"]
 
   constructor(private domService: DomService,
               private _snackBar: MatSnackBar,

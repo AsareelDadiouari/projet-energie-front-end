@@ -2,7 +2,8 @@
 // `ng build` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
-const openChargeMaptoken = '72341d83-3f03-42ab-b3f3-6b0a46f17f05'
+const openChargeMaptoken = '72341d83-3f03-42ab-b3f3-6b0a46f17f05';
+const openMapServiceToken = "5b3ce3597851110001cf6248689d473c044c43afb6cec015efc2fcc1";
 
 export const environment = {
   production: false,
@@ -17,7 +18,9 @@ export const environment = {
     url: 'http://localhost:3000'
   },
   openMapService: {
-    token: "5b3ce3597851110001cf6248689d473c044c43afb6cec015efc2fcc1"
+    token: openMapServiceToken,
+    apikeyGeoCode: 'https://api.openrouteservice.org/geocode/search?api_key=' + openMapServiceToken + "&size=1",
+    apikeyDirections: 'https://api.openrouteservice.org/v2/directions/driving-car?api_key=' + openMapServiceToken
   }
 };
 

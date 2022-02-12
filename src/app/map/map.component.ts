@@ -34,6 +34,8 @@ export class MapComponent implements OnInit, OnDestroy, AfterViewInit {
   stations!: StationInfo[];
   markers: mapboxgl.Marker[] = [];
   stationInfoSubscriber!: Subscription;
+  distanceCoordinates: (Coords[] | number[][]) = [];
+  layersAndSources: string[] = [];
 
   constructor(public dialog: MatDialog,
               private mapService: MapService,
@@ -63,6 +65,9 @@ export class MapComponent implements OnInit, OnDestroy, AfterViewInit {
     });
 
     this.initMap(this.defaultCoords);
+    this.notificationService.selectedCountry.subscribe(_ => {
+      this.removeOldLayersAndSources();
+    });
   }
 
   ngOnDestroy() {
@@ -70,6 +75,7 @@ export class MapComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit() {
+    this.getGeoCoordinates();
   }
 
   initMap(coords: Coords) {
@@ -117,6 +123,8 @@ export class MapComponent implements OnInit, OnDestroy, AfterViewInit {
     })
   }
 
+
+
   findStation(index: number): StationInfo {
     return this.stations[index];
   }
@@ -141,12 +149,7 @@ export class MapComponent implements OnInit, OnDestroy, AfterViewInit {
           this.deleteMarkers();
           this.stations = value;
           const toCenter: [number, number] = this.mathService.getMiddleLatLngCenter(Object.assign([], this.stations.map(x => x.coords)));
-
-          if (this.stations !== undefined)
-            this.map.flyTo({
-              center: toCenter,
-              zoom: 5,
-            });
+          this.flyTo(toCenter);
           this.setChargePointsMarker(this.stations);
         },
         error: err => {
@@ -154,6 +157,14 @@ export class MapComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       });
     })
+  }
+
+  flyTo(geoJsonCenter: [number, number], zoom?: number){
+    if (this.stations !== undefined)
+      this.map.flyTo({
+        center: geoJsonCenter,
+        zoom: zoom ?? 5,
+      });
   }
 
   addLocateUserPositionControl() {
@@ -197,5 +208,55 @@ export class MapComponent implements OnInit, OnDestroy, AfterViewInit {
     dialogRef.afterClosed().subscribe(result => {
       //console.log(result);
     });
+  }
+
+  displayRouteFromDirections(){
+    const routeId = 'route-' + Math.random();
+    this.layersAndSources.push(routeId);
+
+    this.map.addSource(routeId, {
+      type: "geojson",
+      data: {
+        type: 'Feature',
+        properties: {},
+        geometry: {
+          type: 'LineString',
+          coordinates: (this.distanceCoordinates as Coords[]).map((value: Coords) => [value.lon, value.lat]) as []
+        }
+      }
+    });
+
+    this.map.addLayer({
+      'id': routeId,
+      'type': 'line',
+      'source': routeId,
+      'layout': {
+        'line-join': 'round',
+        'line-cap': 'round'
+      },
+      'paint': {
+        'line-color': '#'+(Math.random() * 0xFFFFFF << 0).toString(16).padStart(6, '0'),
+        'line-width': 8
+      }
+    });
+    this.flyTo(this.mathService.getMiddleLatLngCenter(this.distanceCoordinates as Coords[]), 8)
+  }
+
+  getGeoCoordinates(){
+    this.mapService.getRouteDirection("coords").subscribe((value) => {
+      this.distanceCoordinates = value;
+      this.displayRouteFromDirections();
+    });
+  }
+
+  removeOldLayersAndSources(){
+    console.log("suppression");
+    this.layersAndSources.forEach(
+      routeID => {
+        this.map.removeLayer(routeID);
+        this.map.removeSource(routeID)
+      }
+    );
+    this.layersAndSources.splice(0, this.layersAndSources.length);
   }
 }

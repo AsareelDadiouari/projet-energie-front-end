@@ -12,12 +12,12 @@
     <p>
       <mat-form-field appearance="outline">
         <mat-label>Arrivée</mat-label>
-        <input [formControlName]="'arrival'" matInput>
+        <input (keyup.enter)="onSubmit()" [formControlName]="'arrival'" matInput>
       </mat-form-field>
     </p>
 
     <p>
-      <button (click)="onSubmit($event)" [disabled]="this.form.invalid" color="primary" mat-raised-button type="button">
+      <button (click)="onSubmit()" [disabled]="this.form.invalid" color="primary" mat-raised-button type="button">
         Submit
       </button>
     </p>
