@@ -25,6 +25,7 @@ import {MatAutocompleteModule} from "@angular/material/autocomplete";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {FilterPropertyPipe} from "./pipes/objetPropFilter.pipe";
 import {MatSnackBar} from "@angular/material/snack-bar";
+import {DepartureDestinationComponent} from './departure-destination/departure-destination.component';
 
 const config: SocketIoConfig = {url: environment.server.url, options: {}};
 
@@ -34,7 +35,8 @@ const config: SocketIoConfig = {url: environment.server.url, options: {}};
     MapComponent,
     StationInfoComponent,
     CarInfoComponent,
-    FilterPropertyPipe
+    FilterPropertyPipe,
+    DepartureDestinationComponent
   ],
   imports: [
     BrowserModule,

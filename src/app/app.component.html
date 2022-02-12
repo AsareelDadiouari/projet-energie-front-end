@@ -1,18 +1,53 @@
 <section class="section-main">
-  <mat-toolbar #toolbar color="#fff">
-    <mat-toolbar-row>
-      <button (click)="openSettings" mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon">
-        <mat-icon>menu</mat-icon>
-      </button>
-      <span>Optimisation Trajet</span>
-    </mat-toolbar-row>
+  <mat-toolbar #toolbar>
+    <button (click)="openSettings" aria-label="Example icon-button with menu icon" class="example-icon" mat-icon-button>
+      <mat-icon>menu</mat-icon>
+    </button>
+    <span>Optimisation Trajet</span>
+    <span class="example-spacer"></span>
+    <mat-form-field appearance="standard" class="country-input">
+      <mat-label>Pays</mat-label>
+      <input matInput
+             [formControl]="countryFormControl"
+             (keyup.enter)="changeCountry($event)"
+             placeholder="Ex. MA, FR, GA, BF"
+             [matAutocomplete]="auto"
+             position='above'
+             [value]="this.notificationService.selectedCountry | async"
+      >
+      <mat-autocomplete
+        class="country-autocomplete-class"
+        #auto="matAutocomplete"
+        (optionSelected)="fillOnOptionSelect($event)" autoActiveFirstOption>
+        <mat-option *ngFor="let country of countriesSelection"
+                    [value]="country"
+        >
+          {{country}}
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
   </mat-toolbar>
-  <mat-tab-group [(selectedIndex)]="tabIndex" #tabs headerPosition="below">
+
+  <mat-tab-group #tabs [(selectedIndex)]="tabIndex" headerPosition="below">
     <mat-tab label="Map">
       <app-map></app-map>
     </mat-tab>
-    <mat-tab label="Véhicule"> <app-car-info (tabModificationEmitter)="updateTabIndex($event)" [tabIndex]="tabIndex" [tabs]="tabs" [toolbar]="toolbar"></app-car-info> </mat-tab>
+
+    <mat-tab [disabled]="!(this.notificationService.userVehicleInfoIsSaved() | async)" [tabIndex]="tabIndex"
+             label="Itinéraire">
+      <app-departure-destination
+        (tabModificationEmitter)="tabIndex = $event;"></app-departure-destination>
+    </mat-tab>
+
+    <mat-tab label="Véhicule">
+      <app-car-info (tabModificationEmitter)="updateTabIndex($event)"
+                    [tabIndex]="tabIndex"
+                    [tabs]="tabs"
+                    [toolbar]="toolbar"></app-car-info>
+    </mat-tab>
+
   </mat-tab-group>
+
 </section>
 
 

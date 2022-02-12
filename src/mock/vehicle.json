@@ -4,6 +4,7 @@
     "power": 230,
     "battery": 64.7,
     "autonomy": 339,
+    "consumption": 22.6,
     "image": "https://www.auto-moto.com/wp-content/uploads/sites/9/2019/03/audi-e-tron-750x410.jpg"
   },
   {
@@ -11,6 +12,7 @@
     "power": 250,
     "battery": 80.7,
     "autonomy": 590,
+    "consumption": 22.4,
     "image": "https://www.auto-moto.com/wp-content/uploads/sites/9/2022/01/bmw-i4-750x410.jpg"
   },
   {
@@ -18,6 +20,7 @@
     "power": 100,
     "battery": 50,
     "autonomy": 350,
+    "consumption": 22,
     "image": "https://www.auto-moto.com/wp-content/uploads/sites/9/2020/06/citroen-e-c4-1-750x410.jpg"
   },
   {
@@ -25,6 +28,7 @@
     "power": 70,
     "battery": 23.8,
     "autonomy": 185,
+    "consumption": 11.4,
     "image": "https://www.auto-moto.com/wp-content/uploads/sites/9/2020/06/fiat-500e-750x410.jpg"
   },
   {
@@ -32,6 +36,7 @@
     "power": 80,
     "battery": 52,
     "autonomy": 390,
+    "consumption": 18,
     "image": "https://www.auto-moto.com/wp-content/uploads/sites/9/2019/09/renault-zoe-750x410.jpg"
   },
   {
@@ -39,6 +44,7 @@
     "power": 350,
     "battery": 72.5,
     "autonomy": 663,
+    "consumption": 18.1,
     "image": "https://www.auto-moto.com/wp-content/uploads/sites/9/2019/11/tesla-model-s-750x410.jpg"
   },
   {
@@ -46,6 +52,7 @@
     "power": 134,
     "battery": 1.2,
     "autonomy": 500,
+    "consumption": 20,
     "image": "https://www.auto-moto.com/wp-content/uploads/sites/9/2021/02/toyota-mirai-750x410.jpg"
   },
   {
@@ -53,6 +60,7 @@
     "power": 110,
     "battery": 45,
     "autonomy": 350,
+    "consumption": 21.3,
     "image": "https://www.auto-moto.com/wp-content/uploads/sites/9/2019/09/volkswagen-id3-750x410.jpeg"
   },
   {
@@ -60,6 +68,7 @@
     "power": 300,
     "battery": 78,
     "autonomy": 425,
+    "consumption": 29,
     "image": "https://www.auto-moto.com/wp-content/uploads/sites/9/2020/01/volvo-xc40-recharge-750x410.jpeg"
   },
   {
@@ -67,6 +76,7 @@
     "power": 61,
     "battery": 36.8,
     "autonomy": 260,
+    "consumption": 14.1,
     "image": "https://www.auto-moto.com/wp-content/uploads/sites/9/2019/09/seat-mii-electric-750x410.jpeg"
   }
 ]

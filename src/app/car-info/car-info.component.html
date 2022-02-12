@@ -1,22 +1,24 @@
-<section  class="car-info">
-  <form  [formGroup]="carInfoForm" (ngSubmit)="onSubmit($event)" class="car-info-form">
+<section class="car-info">
+  <form (ngSubmit)="onSubmit($event)" [formGroup]="carInfoForm" class="car-info-form">
     <div class="mat-display-1">Entrez les infos de votre véhicule</div>
     <p>
       <mat-form-field appearance="outline">
         <mat-label>Enter un model</mat-label>
-        <input type="text"
-               placeholder="Pick one"
+        <input [formControlName]="'name'"
+               [matAutocomplete]="auto"
                aria-label="Number"
                matInput
-               [formControlName]="'name'"
-               [matAutocomplete]="auto">
+               placeholder="Pick one"
+               type="text">
         <mat-autocomplete
-          (optionSelected)="fillOnOptionSelect($event)"
-          autoActiveFirstOption #auto="matAutocomplete">
+          #auto="matAutocomplete"
+          (optionSelected)="fillOnOptionSelect($event)" autoActiveFirstOption>
           <mat-option *ngFor="let vehicle of vehicles"
                       [value]="vehicle | property:'name'"
           >
+            <img style="vertical-align:middle;" aria-hidden src="{{vehicle.image}}" height="25" />
             {{vehicle.name}}
+
           </mat-option>
         </mat-autocomplete>
       </mat-form-field>
@@ -25,33 +27,35 @@
     <p>
       <mat-form-field appearance="outline">
         <mat-label>Puissance</mat-label>
-        <input matInput [formControlName]="'power'">
+        <input [formControlName]="'power'" matInput>
       </mat-form-field>
     </p>
 
     <p>
       <mat-form-field appearance="outline">
         <mat-label>Autonomie</mat-label>
-        <input matInput [formControlName]="'autonomy'">
+        <input [formControlName]="'autonomy'" matInput>
       </mat-form-field>
     </p>
 
     <p>
       <mat-form-field appearance="outline">
         <mat-label>Consommation</mat-label>
-        <input matInput [formControlName]="'consumption'">
+        <input [formControlName]="'consumption'" matInput>
       </mat-form-field>
     </p>
 
     <p>
       <mat-form-field appearance="outline">
         <mat-label>Voltage</mat-label>
-        <input matInput [formControlName]="'battery'">
+        <input [formControlName]="'battery'" matInput>
       </mat-form-field>
     </p>
 
     <p>
-      <button mat-raised-button type="button" (click)="onSubmit($event)" color="primary" [disabled]="this.carInfoForm.invalid">Submit</button>
+      <button (click)="onSubmit($event)" [disabled]="this.carInfoForm.invalid" color="primary" mat-raised-button
+              type="button">Submit
+      </button>
     </p>
   </form>
 

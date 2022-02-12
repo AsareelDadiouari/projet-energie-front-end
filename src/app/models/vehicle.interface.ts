@@ -1,8 +1,8 @@
 export interface Vehicle {
   name: string,
   power: number,
-  battery: number,
+  battery?: number,
   autonomy: number,
   consumption?: number,
-  image: string
+  image?: string
 }

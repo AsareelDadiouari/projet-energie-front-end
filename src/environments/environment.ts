@@ -15,6 +15,9 @@ export const environment = {
   },
   server: {
     url: 'http://localhost:3000'
+  },
+  openMapService: {
+    token: "5b3ce3597851110001cf6248689d473c044c43afb6cec015efc2fcc1"
   }
 };
 

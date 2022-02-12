@@ -1,0 +1,26 @@
+<section class="depArr">
+  <form #departureArrivalForm [formGroup]="form" class="depArr-form">
+    <div class="mat-display-1">Entrez le départ et la destination</div>
+
+    <p>
+      <mat-form-field appearance="outline">
+        <mat-label>Départ</mat-label>
+        <input [formControlName]="'departure'" matInput>
+      </mat-form-field>
+    </p>
+
+    <p>
+      <mat-form-field appearance="outline">
+        <mat-label>Arrivée</mat-label>
+        <input [formControlName]="'arrival'" matInput>
+      </mat-form-field>
+    </p>
+
+    <p>
+      <button (click)="onSubmit($event)" [disabled]="this.form.invalid" color="primary" mat-raised-button type="button">
+        Submit
+      </button>
+    </p>
+  </form>
+
+</section>

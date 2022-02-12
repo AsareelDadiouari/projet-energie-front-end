@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import * as mapboxgl from 'mapbox-gl';
-import {GeolocateControl} from 'mapbox-gl';
+import {FlyToOptions, GeolocateControl} from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import {environment} from "../../environments/environment";
 import {MatDialog} from "@angular/material/dialog";
@@ -9,9 +9,11 @@ import {MapService} from "../service/map.service";
 import {Coords} from "../models/coords.interface";
 import {StationInfo} from "../models/stations.interface";
 import {Subscription} from "rxjs";
-import {MarkerMap} from "../models/markerMap";
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
+import {DepartureArrivalFormClass} from "../models/departure-arrival-form.class";
+import {NotificationService} from "../service/notificationService";
+import {MathService} from "../service/math.service";
 
 @Component({
   selector: 'app-map',
@@ -21,21 +23,29 @@ import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 export class MapComponent implements OnInit, OnDestroy, AfterViewInit {
   searchBarGeoCoder!: MapboxGeocoder;
   currentPositionControl!: GeolocateControl;
+  departureArrivalFormControl!: DepartureArrivalFormClass;
   @ViewChild('mapElement', {static: true}) mapElement!: ElementRef;
+  @ViewChild('departureArrivalForm', {static: true}) departureArrivalForm!: ElementRef;
   map!: mapboxgl.Map;
   style: string = 'mapbox://styles/mapbox/outdoors-v11';
   defaultCoords: Coords;
   currentPosition!: Coords;
   socketData!: any;
   stations!: StationInfo[];
+  markers: mapboxgl.Marker[] = [];
   stationInfoSubscriber!: Subscription;
 
-  constructor(public dialog: MatDialog, private mapService: MapService) {
+  constructor(public dialog: MatDialog,
+              private mapService: MapService,
+              private notificationService: NotificationService,
+              private mathService: MathService
+  ) {
     this.defaultCoords = {
       lat: 32,
       lon: -5
     }
-    this.currentPosition = {} as Coords
+    this.currentPosition = {} as Coords;
+    this.departureArrivalFormControl = new DepartureArrivalFormClass();
   }
 
   ngOnInit(): void {
@@ -71,11 +81,18 @@ export class MapComponent implements OnInit, OnDestroy, AfterViewInit {
       center: [coords.lon, coords.lat],
     });
 
+
+    this.map.on('', (event) => {
+
+    });
+
     this.map.addControl(new mapboxgl.NavigationControl({visualizePitch: true}));
+    this.map.addControl(new mapboxgl.FullscreenControl({container: document.querySelector('body')}));
     this.addLocateUserPositionControl();
     this.addSearchControl();
     this.addStationsMarkers();
-    this.addVehicleInfo();
+    //this.addDepartureArrivalFormControl();
+
     this.map.once('load', () => {
       this.map.resize();
     })
@@ -87,6 +104,7 @@ export class MapComponent implements OnInit, OnDestroy, AfterViewInit {
       element: customElement,
     }).setLngLat(coords).addTo(this.map);
 
+    this.markers.push(marker);
     return marker;
   }
 
@@ -109,20 +127,32 @@ export class MapComponent implements OnInit, OnDestroy, AfterViewInit {
       mapboxgl: this.map
     });
     this.map.addControl(this.searchBarGeoCoder);
+
     this.searchBarGeoCoder.on("result", (event) => {
       console.log(event);
     })
   }
 
   addStationsMarkers() {
-    this.stationInfoSubscriber = this.mapService.getChargePoints("ma").subscribe({
-      next: (value: StationInfo[]) => {
-        this.stations = value;
-        this.setChargePointsMarker(this.stations);
-      },
-      error: err => {
-        console.error("Error ==", err);
-      }
+    this.notificationService.getSelectedCountry().subscribe((country: string) => {
+      console.log("Pays selectionné",country);
+      this.stationInfoSubscriber = this.mapService.getChargePoints(country).subscribe({
+        next: (value: StationInfo[]) => {
+          this.deleteMarkers();
+          this.stations = value;
+          const toCenter: [number, number] = this.mathService.getMiddleLatLngCenter(Object.assign([], this.stations.map(x => x.coords)));
+
+          if (this.stations !== undefined)
+            this.map.flyTo({
+              center: toCenter,
+              zoom: 5,
+            });
+          this.setChargePointsMarker(this.stations);
+        },
+        error: err => {
+          console.error("Error ==", err);
+        }
+      });
     })
   }
 
@@ -149,8 +179,13 @@ export class MapComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  addVehicleInfo() {
+  addDepartureArrivalFormControl() {
+    this.map.addControl(this.departureArrivalFormControl);
+  }
 
+  deleteMarkers(){
+    this.markers.forEach(maker => maker.remove());
+    this.markers.splice(0, this.markers.length);
   }
 
   openDialog(stationInfo: (StationInfo | undefined)) {
