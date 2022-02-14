@@ -36,7 +36,7 @@ export class CarInfoComponent implements OnInit {
   ngOnInit(): void {
     this.tabs.selectedTabChange.subscribe((value: MatTabChangeEvent) => {
       //console.log(value.tab);
-      console.log("Tab : ", this.tabs.selectedIndex);
+      //console.log("Tab : ", this.tabs.selectedIndex);
     });
   }
 

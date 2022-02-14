@@ -67,6 +67,10 @@
     label: string;
   }
 
+  export interface PropertiesDirection{
+
+  }
+
   export interface Feature {
     type: string;
     geometry: Geometry;

@@ -29,6 +29,7 @@ export class MapService {
   socketData: string = this.socketDataSubject.value;
   public departure$: Subject<string> = new Subject<string>();
   public arrival$:Subject<string> = new Subject<string>();
+  public distanceInKM$: Subject<number> = new Subject<number>();
 
   constructor(private socket: Socket,
               private httpClient: HttpClient,

@@ -20,7 +20,8 @@ export const environment = {
   openMapService: {
     token: openMapServiceToken,
     apikeyGeoCode: 'https://api.openrouteservice.org/geocode/search?api_key=' + openMapServiceToken + "&size=1",
-    apikeyDirections: 'https://api.openrouteservice.org/v2/directions/driving-car?api_key=' + openMapServiceToken
+    apikeyDirections: 'https://api.openrouteservice.org/v2/directions/driving-car?api_key=' + openMapServiceToken,
+    apikeyMatrix: 'https://api.openrouteservice.org/v2/matrix/driving-car'
   }
 };
 

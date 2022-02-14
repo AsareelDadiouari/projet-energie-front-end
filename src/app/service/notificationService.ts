@@ -1,5 +1,6 @@
 import {Injectable} from "@angular/core";
-import {BehaviorSubject, Observable, Subject} from "rxjs";
+import {BehaviorSubject, mergeMap, Observable, Subject} from "rxjs";
+import {Vehicle} from "../models/vehicle.interface";
 
 @Injectable({
   providedIn: 'root'
@@ -20,6 +21,15 @@ export class NotificationService {
 
   getSelectedCountry(): Observable<string>{
     return this.selectedCountry;
+  }
+
+  getUserVehicle(): Observable<Vehicle>{
+    return this.userVehicleInfoIsSaved().pipe(
+      mergeMap((value: boolean) => new Observable<Vehicle>((observer) => {
+        value ? observer.next(JSON.parse(localStorage.getItem('userVehicleInfos') as string)): observer.next(undefined);
+        observer.complete();
+      }))
+    );
   }
 
   setCountry(country: string): void {

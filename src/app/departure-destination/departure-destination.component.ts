@@ -26,8 +26,6 @@ export class DepartureDestinationComponent implements OnInit {
 
   onSubmit() {
     this.tabModificationEmitter.emit(this.tabIndex > 0 ? --this.tabIndex : this.tabIndex);
-    console.log(this.form.controls['departure'].value);
-    console.log(this.form.controls['arrival'].value);
     this.mapService.departure$.next(this.form.controls['departure'].value);
     this.mapService.arrival$.next(this.form.controls['arrival'].value);
     this.form.markAsPristine();

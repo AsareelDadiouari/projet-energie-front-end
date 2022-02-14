@@ -14,6 +14,7 @@ import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 import {DepartureArrivalFormClass} from "../models/departure-arrival-form.class";
 import {NotificationService} from "../service/notificationService";
 import {MathService} from "../service/math.service";
+import {Vehicle} from "../models/vehicle.interface";
 
 @Component({
   selector: 'app-map',
@@ -33,9 +34,11 @@ export class MapComponent implements OnInit, OnDestroy, AfterViewInit {
   socketData!: any;
   stations!: StationInfo[];
   markers: mapboxgl.Marker[] = [];
+  depArrMarkers: mapboxgl.Marker[] = [];
   stationInfoSubscriber!: Subscription;
   distanceCoordinates: (Coords[] | number[][]) = [];
   layersAndSources: string[] = [];
+  lineColors: string[] = ["#0a73f3", "#dec10b"]
 
   constructor(public dialog: MatDialog,
               private mapService: MapService,
@@ -68,6 +71,31 @@ export class MapComponent implements OnInit, OnDestroy, AfterViewInit {
     this.notificationService.selectedCountry.subscribe(_ => {
       this.removeOldLayersAndSources();
     });
+
+    this.mapService.distanceInKM$.subscribe(distance => {
+      console.log("Distance :",distance);
+
+      this.notificationService.getUserVehicle().subscribe((vehicle: Vehicle) => {
+        if (vehicle.autonomy - distance < 0){
+          const currentPos = this.distanceCoordinates[0];
+          const autonomyAt20Percent = (20*vehicle.autonomy)/100;
+          const distanceToTravelFrom20PercentAuto = (distance - (80*vehicle.autonomy)/100);
+          const distanceToTravelCoords20Percent = this.mathService.reduceCoordinateArray(this.distanceCoordinates as Coords[], distanceToTravelFrom20PercentAuto, 100);
+
+          console.log("position Actuelle :", currentPos);
+          console.log("Autonomie à 20 % :",autonomyAt20Percent);
+          console.log("Distance restante à parcourir à 20%:",distanceToTravelFrom20PercentAuto);
+          console.log("Position à 20% dautonomie : ", distanceToTravelCoords20Percent[0]);
+          this.setMarker(distanceToTravelCoords20Percent[0], "#000000", "pin")
+          console.log("Distance restante à parcourir coordonées :",distanceToTravelCoords20Percent);
+
+
+          console.log("Closest station : ",this.mathService.findClosestStation(distanceToTravelCoords20Percent[0], this.stations));
+
+        }
+      });
+    });
+
   }
 
   ngOnDestroy() {
@@ -110,6 +138,9 @@ export class MapComponent implements OnInit, OnDestroy, AfterViewInit {
       element: customElement,
     }).setLngLat(coords).addTo(this.map);
 
+    if (type === "Dep" || type === "Arr")
+      this.depArrMarkers.push(marker);
+
     this.markers.push(marker);
     return marker;
   }
@@ -143,7 +174,6 @@ export class MapComponent implements OnInit, OnDestroy, AfterViewInit {
 
   addStationsMarkers() {
     this.notificationService.getSelectedCountry().subscribe((country: string) => {
-      console.log("Pays selectionné",country);
       this.stationInfoSubscriber = this.mapService.getChargePoints(country).subscribe({
         next: (value: StationInfo[]) => {
           this.deleteMarkers();
@@ -210,9 +240,13 @@ export class MapComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  displayRouteFromDirections(){
+  displayRouteFromDirections(coordinates: Coords[]){
+    this.depArrMarkers.forEach(x => x.remove());
+    this.removeOldLayersAndSources();
     const routeId = 'route-' + Math.random();
     this.layersAndSources.push(routeId);
+    this.setMarker(coordinates[0], "#5994ff", "Dep");
+    this.setMarker(coordinates[coordinates.length - 1], "#50e039", "Arr");
 
     this.map.addSource(routeId, {
       type: "geojson",
@@ -221,10 +255,12 @@ export class MapComponent implements OnInit, OnDestroy, AfterViewInit {
         properties: {},
         geometry: {
           type: 'LineString',
-          coordinates: (this.distanceCoordinates as Coords[]).map((value: Coords) => [value.lon, value.lat]) as []
+          coordinates: (coordinates as Coords[]).map((value: Coords) => [value.lon, value.lat]) as []
         }
       }
     });
+
+    //(Math.random() * 0xFFFFFF << 0).toString(16).padStart(6, '0')
 
     this.map.addLayer({
       'id': routeId,
@@ -235,7 +271,7 @@ export class MapComponent implements OnInit, OnDestroy, AfterViewInit {
         'line-cap': 'round'
       },
       'paint': {
-        'line-color': '#'+(Math.random() * 0xFFFFFF << 0).toString(16).padStart(6, '0'),
+        'line-color': this.lineColors[0],
         'line-width': 8
       }
     });
@@ -245,12 +281,12 @@ export class MapComponent implements OnInit, OnDestroy, AfterViewInit {
   getGeoCoordinates(){
     this.mapService.getRouteDirection("coords").subscribe((value) => {
       this.distanceCoordinates = value;
-      this.displayRouteFromDirections();
+      this.displayRouteFromDirections(this.distanceCoordinates as Coords[]);
+      this.mapService.distanceInKM$.next(this.mathService.getDistanceInKm(this.distanceCoordinates as Coords[]));
     });
   }
 
   removeOldLayersAndSources(){
-    console.log("suppression");
     this.layersAndSources.forEach(
       routeID => {
         this.map.removeLayer(routeID);
